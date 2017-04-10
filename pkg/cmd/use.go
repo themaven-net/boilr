@@ -59,13 +59,9 @@ var Use = &cli.Command{
       exit.Fatal(fmt.Errorf("use: %s", err))
     }
 
-    tmpl, err := template.Get(tmplPath)
+    tmpl, err := template.GetEx(tmplPath, GetStringFlag(cmd, "project-file"))
     if err != nil {
       exit.Fatal(fmt.Errorf("use: %s", err))
-    }
-
-    if (jsonFile := GetStringFlag(cmd, "project-file"); jsonFile {
-      tmpl.JsonFile(jsonFile)
     }
 
     if shouldUseDefaults := GetBoolFlag(cmd, "use-defaults"); shouldUseDefaults {

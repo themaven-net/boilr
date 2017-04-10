@@ -32,8 +32,11 @@ func (t dirTemplate) Info() Metadata {
   return t.Metadata
 }
 
-// Get retrieves the template from a path.
 func Get(path string) (Interface, error) {
+  return GetEx(path, "")
+}
+// Get retrieves the template from a path.
+func GetEx(path string, projectJson string) (Interface, error) {
   absPath, err := filepath.Abs(path)
   if err != nil {
     return nil, err
@@ -41,7 +44,9 @@ func Get(path string) (Interface, error) {
 
   // TODO make context optional
 
-  contextFileName := t.JsonFile || boilr.ContextFileName
+  if projectJson == "" {
+    projectJson = filepath.Join(absPath, boilr.ContextFileName)
+  }
   ctxt, err := func(fname string) (map[string]interface{}, error) {
     f, err := os.Open(fname)
     if err != nil {
@@ -64,7 +69,7 @@ func Get(path string) (Interface, error) {
     }
 
     return metadata, nil
-  }(filepath.Join(absPath, contextFileName))
+  }(projectJson)
 
   metadataExists, err := osutil.FileExists(filepath.Join(absPath, boilr.TemplateMetadataName))
   if err != nil {
@@ -112,7 +117,7 @@ func (t *dirTemplate) UseDefaultValues() {
   t.ShouldUseDefaults = true
 }
 
-func (t *dirTemplate) JsonFile(jsonFile string) {
+func (t *dirTemplate) SetJsonFile(jsonFile string) {
   t.JsonFile = jsonFile
 }
 

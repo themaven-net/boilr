@@ -35,7 +35,7 @@ func Run() {
 
   Use.PersistentFlags().BoolP("use-defaults", "f", false, "Uses default values in project.json instead of prompting the user")
   Use.PersistentFlags().StringP("log-level", "l", "error", "log-level for output")
-  Use.PersistentFlags().StringP("project-file", "p", nil, "specify project.json file explicitly")
+  Use.PersistentFlags().StringP("project-file", "p", "", "specify project.json file explicitly")
   Template.AddCommand(Use)
 
   Template.AddCommand(Validate)
