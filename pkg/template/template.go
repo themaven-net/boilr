@@ -14,6 +14,8 @@ import (
   "github.com/tmrts/boilr/pkg/util/osutil"
   "github.com/tmrts/boilr/pkg/util/stringutil"
   "github.com/tmrts/boilr/pkg/util/tlog"
+  "strings"
+  "os/exec"
 )
 
 // Interface is contains the behavior of boilr templates.
@@ -43,10 +45,10 @@ func GetEx(path string, projectJson string) (Interface, error) {
   }
 
   // TODO make context optional
-
   if projectJson == "" {
     projectJson = filepath.Join(absPath, boilr.ContextFileName)
   }
+  tlog.Debug(fmt.Sprintf("getting with project.json: %s", projectJson))
   ctxt, err := func(fname string) (map[string]interface{}, error) {
     f, err := os.Open(fname)
     if err != nil {
@@ -132,9 +134,10 @@ func (t *dirTemplate) BindPrompts() {
             switch v2 := v2.(type) {
             // First is the default value if it's a slice
             case []interface{}:
+              tlog.Error(fmt.Sprintf("%s : %s\n", s, v2[0]))
               return v2[0]
             }
-
+	    tlog.Error(fmt.Sprintf("%s : %s\n", s, v2))
             return v2
           }
         } else {
@@ -158,10 +161,11 @@ func (t *dirTemplate) BindPrompts() {
         switch v := v.(type) {
         // First is the default value if it's a slice
         case []interface{}:
+          tlog.Error(fmt.Sprintf("v[0] %s : %s\n", s, v[0]))
           return v[0]
         }
-
-        return v
+        tlog.Error(fmt.Sprintf("%s : %s\n", s, v))
+	return v
       }
     } else {
       t.FuncMap[s] = prompt.New(s, v)
@@ -188,6 +192,7 @@ func (t *dirTemplate) Execute(dirPrefix string) error {
 
     // Path relative to the root of the template directory
     oldName, err := filepath.Rel(t.Path, filename)
+    // oldAbsName, err := filepath.Abs(filename)
     if err != nil {
       return err
     }
@@ -208,13 +213,16 @@ func (t *dirTemplate) Execute(dirPrefix string) error {
     newName := buf.String()
 
     target := filepath.Join(dirPrefix, newName)
-
+    // tlog.Error(fmt.Sprintf("old filename: %s, target: %s", oldAbsName, target))
     if info.IsDir() {
       if err := os.Mkdir(target, 0755); err != nil {
         if !os.IsExist(err) {
           return err
         }
       }
+    } else if strings.HasSuffix(oldName, ".png") {
+      osutil.CopyRecursively(oldName, target)
+      return nil
     } else {
       fi, err := os.Lstat(filename)
       if err != nil {
