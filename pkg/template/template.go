@@ -152,16 +152,18 @@ func (t *dirTemplate) BindPrompts() {
     }
 
     if t.ShouldUseDefaults {
-      t.FuncMap[s] = func() interface{} {
-        switch v := v.(type) {
-        // First is the default value if it's a slice
-        case []interface{}:
-          tlog.Error(fmt.Sprintf("v[0] %s : %s\n", s, v[0]))
-          return v[0]
-        }
-        tlog.Error(fmt.Sprintf("%s : %s\n", s, v))
-	return v
-      }
+      t.FuncMap[s] = func(s2 string, v2 interface{}) func() interface{} {
+	return func() interface{} {
+	  switch v2 := v2.(type) {
+	  // First is the default value if it's a slice
+	  case []interface{}:
+	    tlog.Error(fmt.Sprintf("s: %v, v[0]: %s\n", s2, v2[0]))
+	    return v2[0]
+	  }
+	  tlog.Error(fmt.Sprintf("s: %v, %v \n", s2, v2))
+	  return v2
+	}
+      }(s, v)
     } else {
       t.FuncMap[s] = prompt.New(s, v)
     }
