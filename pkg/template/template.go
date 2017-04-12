@@ -15,7 +15,6 @@ import (
   "github.com/tmrts/boilr/pkg/util/stringutil"
   "github.com/tmrts/boilr/pkg/util/tlog"
   "strings"
-  "os/exec"
 )
 
 // Interface is contains the behavior of boilr templates.
@@ -117,10 +116,6 @@ type dirTemplate struct {
 
 func (t *dirTemplate) UseDefaultValues() {
   t.ShouldUseDefaults = true
-}
-
-func (t *dirTemplate) SetJsonFile(jsonFile string) {
-  t.JsonFile = jsonFile
 }
 
 func (t *dirTemplate) BindPrompts() {
