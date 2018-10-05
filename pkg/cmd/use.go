@@ -12,7 +12,7 @@ import (
   "github.com/tmrts/boilr/pkg/template"
   "github.com/tmrts/boilr/pkg/util/exit"
   "github.com/tmrts/boilr/pkg/util/osutil"
-  "github.com/tmrts/boilr/pkg/util/validate"
+  //"github.com/tmrts/boilr/pkg/util/validate"
 )
 
 // TemplateInRegistry checks whether the given name exists in the template registry.
@@ -32,10 +32,10 @@ var Use = &cli.Command{
   Use:   "use <template-tag> <target-dir>",
   Short: "Execute a project template in the given directory",
   Run: func(cmd *cli.Command, args []string) {
-    MustValidateArgs(args, []validate.Argument{
-      {"template-tag", validate.UnixPath},
-      {"target-dir", validate.UnixPath},
-    })
+    //MustValidateArgs(args, []validate.Argument{
+    //  {"template-tag", validate.UnixPath},
+      // {"target-dir", validate.UnixPath},
+    //})
 
     MustValidateTemplateDir()
 
